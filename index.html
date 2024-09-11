@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chupa Math School – Інтерактивні математичні завдання (+/-/*/:)</title>
+    <title>Інтерактивні математичні завдання (+/-/*/:)</title>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -20,13 +20,7 @@
             text-shadow: 2px 2px 5px #ff6347;
             font-size: 40px;
             text-align: center;
-            margin-bottom: 10px;
-        }
-        .copyright {
-            font-size: 18px;
-            text-align: center;
             margin-bottom: 30px;
-            color: #ff6347;
         }
         .task {
             margin: 15px 0;
@@ -75,9 +69,7 @@
 </head>
 <body>
 
-<h1>Chupa Math School</h1>
-<p class="copyright">&copy; 2024 Chupa Math School. Всі права захищені.</p>
-
+<h1>Інтерактивні математичні завдання</h1>
 <div class="controls">
     <label for="complexity">Виберіть рівень складності: </label>
     <select id="complexity">
@@ -88,7 +80,6 @@
         <option value="6">6 клас</option>
         <option value="7">7 клас</option>
     </select>
-    <button id="start-button">Почати</button>
 </div>
 <div id="task-list"></div>
 
@@ -101,9 +92,12 @@
             case '2':
             case '3':
                 operator = Math.random() > 0.5 ? '+' : '-';
-                num1 = Math.floor(Math.random() * 90) + 11; // Випадкове число від 11 до 100
-                num2 = Math.floor(Math.random() * 90) + 11;
-                if (operator === '-' && num1 < num2) [num1, num2] = [num2, num1]; // Гарантія позитивного результату
+                do {
+                    num1 = Math.floor(Math.random() * 90) + 11; // Випадкове число від 11 до 100
+                    num2 = Math.floor(Math.random() * 90) + 11;
+                    if (operator === '-' && num1 < num2) [num1, num2] = [num2, num1]; // Гарантія позитивного результату
+                } while (operator === '+' && num1 + num2 > 100); // Умова, що сума не перевищує 100
+                
                 correctAnswer = operator === '+' ? num1 + num2 : num1 - num2;
                 break;
 
@@ -112,8 +106,8 @@
             case '6':
             case '7':
                 operator = Math.random() > 0.5 ? '*' : '/';
-                num1 = Math.floor(Math.random() * 8) + 3; // Випадкове число від 3 до 9
-                num2 = Math.floor(Math.random() * 8) + 3;
+                num1 = Math.floor(Math.random() * 9) + 1; // Випадкове число від 1 до 9
+                num2 = Math.floor(Math.random() * 9) + 1;
                 if (operator === '/') {
                     num1 = num1 * num2; // Гарантія точної відповіді для ділення
                     correctAnswer = num1 / num2;
@@ -181,8 +175,8 @@
         }
     }
 
-    // Подія для кнопки "Почати"
-    document.getElementById('start-button').addEventListener('click', function() {
+    // Відтворення нових завдань при зміні вибору класу
+    document.getElementById('complexity').addEventListener('change', function() {
         generateTasks();
     });
 
