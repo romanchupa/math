@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерактивні математичні завдання (+/-)</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 40px;
+            background-image: url('https://cdn.pixabay.com/photo/2016/04/24/23/30/mathematics-1355117_960_720.jpg'); /* New math background */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        h1 {
+            color: #ff4500;
+            text-shadow: 2px 2px 5px #ff6347;
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .task {
+            margin: 15px 0;
+            font-size: 24px;
+            color: #006400;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        .answer {
+            width: 80px;
+            height: 40px;
+            margin-left: 10px;
+            font-size: 24px;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #00bfff;
+        }
+        .answer:focus {
+            outline: none;
+            box-shadow: 0 0 5px #ff4500;
+        }
+        .result {
+            margin-left: 15px;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .disabled {
+            background-color: lightgray;
+            pointer-events: none;
+        }
+        /* For task list container */
+        #task-list {
+            max-width: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Інтерактивні математичні завдання</h1>
+<div id="task-list"></div>
+
+<script>
+    // Генеруємо випадкове завдання з двома числами між 11 і 100, гарантуючи результат < 100
+    function generateRandomTask() {
+        let num1, num2, correctAnswer;
+        let operator = Math.random() > 0.5 ? '+' : '-';
+
+        do {
+            num1 = Math.floor(Math.random() * 90) + 11; // Випадкове число від 11 до 100
+            num2 = Math.floor(Math.random() * 90) + 11; // Випадкове число від 11 до 100
+
+            // Гарантуємо, що результат віднімання не від'ємний
+            if (operator === '-' && num1 < num2) {
+                [num1, num2] = [num2, num1];
+            }
+
+            // Обчислюємо правильну відповідь
+            correctAnswer = operator === '+' ? num1 + num2 : num1 - num2;
+        } while (correctAnswer >= 100); // Повторюємо, якщо результат >= 100
+
+        return {
+            taskText: `${num1} ${operator} ${num2} = `,
+            correctAnswer
+        };
+    }
+
+    // Генерація математичних завдань
+    function generateTasks(taskCount) {
+        const taskList = document.getElementById('task-list');
+
+        for (let i = 0; i < taskCount; i++) {
+            const taskData = generateRandomTask();
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task';
+
+            // Створюємо поле для введення і елемент результату
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'answer';
+            input.placeholder = '?';
+            
+            const result = document.createElement('span');
+            result.className = 'result';
+
+            let attemptCount = 0; // Відстежуємо кількість спроб
+
+            // Перевірка відповіді після введення (подія 'blur')
+            input.addEventListener('blur', function () {
+                let userAnswer = parseInt(input.value, 10);
+
+                if (!isNaN(userAnswer)) {
+                    if (userAnswer === taskData.correctAnswer) {
+                        result.textContent = 'Правильно!';
+                        result.style.color = 'green';
+                        input.disabled = true; // Заблокувати поле після правильної відповіді
+                    } else {
+                        attemptCount++;
+                        if (attemptCount === 1) {
+                            result.textContent = 'Неправильно, спробуйте ще раз!';
+                            result.style.color = 'red';
+                        } else if (attemptCount === 2) {
+                            result.textContent = 'Неправильно! Поле заблоковано.';
+                            result.style.color = 'red';
+                            input.disabled = true; // Заблокувати поле після другої помилки
+                            input.classList.add('disabled');
+                        }
+                    }
+                } else {
+                    result.textContent = ''; // Очистити результат, якщо введене значення не є числом
+                }
+            });
+
+            // Додаємо номер завдання, текст завдання, поле для введення та результат до елемента завдання
+            taskElement.textContent = `${i + 1}. ${taskData.taskText}`;
+            taskElement.appendChild(input);
+            taskElement.appendChild(result);
+            taskList.appendChild(taskElement);
+        }
+    }
+
+    // Генеруємо 20 завдань при завантаженні сторінки
+    generateTasks(20);
+</script>
+
+</body>
+</html>
