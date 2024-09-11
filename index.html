@@ -122,6 +122,26 @@
         };
     }
 
+    // Функція для перевірки відповіді
+    function checkAnswer(input, taskData, result) {
+        let userAnswer = parseInt(input.value, 10);
+
+        if (!isNaN(userAnswer)) {
+            if (userAnswer === taskData.correctAnswer) {
+                result.textContent = 'Правильно!';
+                result.style.color = 'green';
+                input.disabled = true;
+            } else {
+                result.textContent = `Неправильно! Правильна відповідь: ${taskData.correctAnswer}`;
+                result.style.color = 'red';
+                input.disabled = true;
+                input.classList.add('disabled');
+            }
+        } else {
+            result.textContent = ''; // Очистити результат, якщо введене значення не є числом
+        }
+    }
+
     // Функція для генерації завдань
     function generateTasks() {
         const taskList = document.getElementById('task-list');
@@ -141,30 +161,13 @@
             const result = document.createElement('span');
             result.className = 'result';
 
-            let attemptCount = 0;
-
             input.addEventListener('blur', function () {
-                let userAnswer = parseInt(input.value, 10);
+                checkAnswer(input, taskData, result);
+            });
 
-                if (!isNaN(userAnswer)) {
-                    if (userAnswer === taskData.correctAnswer) {
-                        result.textContent = 'Правильно!';
-                        result.style.color = 'green';
-                        input.disabled = true;
-                    } else {
-                        attemptCount++;
-                        if (attemptCount === 1) {
-                            result.textContent = 'Неправильно, спробуйте ще раз!';
-                            result.style.color = 'red';
-                        } else if (attemptCount === 2) {
-                            result.textContent = `Неправильно! Правильна відповідь: ${taskData.correctAnswer}`;
-                            result.style.color = 'red';
-                            input.disabled = true;
-                            input.classList.add('disabled');
-                        }
-                    }
-                } else {
-                    result.textContent = ''; // Очистити результат, якщо введене значення не є числом
+            input.addEventListener('keypress', function (event) {
+                if (event.key === 'Enter') {
+                    checkAnswer(input, taskData, result);
                 }
             });
 
